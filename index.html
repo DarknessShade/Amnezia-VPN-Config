@@ -6,20 +6,17 @@
     <title>Amnezia VPN Config Generator</title>
     <meta name="description" content="Generate customized AmneziaWG / WG Tunnel configurations with custom Junk, Endpoint, and MTU settings.">
     
-    <!-- Google Fonts: Vazirmatn for Persian, Orbitron & Share Tech Mono for English & Tech elements -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;600;700&family=Vazirmatn:wght@300;400;500;700;800&display=swap" rel="stylesheet">
     
     <style>
-        /* ── CSS Styles & Cyber Design System ─────────────────────────── */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        /* Dynamic Theme Variables */
         body.light {
             --bg: #eef2f7;
             --bg-card: rgba(255, 255, 255, 0.85);
@@ -126,7 +123,6 @@
             line-height: 1.5;
         }
 
-        /* Typography & Fonts Switching rules */
         body.lang-fa { 
             font-family: "Vazirmatn", sans-serif; 
         }
@@ -134,7 +130,6 @@
             font-family: "Share Tech Mono", monospace; 
         }
 
-        /* Enforcing new style fonts to tech elements */
         .modern-input, 
         .textarea1, 
         .endpoint-item, 
@@ -150,7 +145,6 @@
             letter-spacing: 1px;
         }
 
-        /* Futuristic Dual-Header Groups */
         .main-title-group {
             display: flex;
             flex-direction: column;
@@ -214,7 +208,6 @@
             min-height: 100vh;
         }
 
-        /* Matrix Mesh Grid and Orbs */
         .grid-bg {
             position: fixed;
             inset: 0;
@@ -247,7 +240,6 @@
             z-index: 2;
         }
 
-        /* Corner Control Buttons (Absolute Positioning) */
         .lang-switcher-text {
             position: absolute;
             top: 1.5rem;
@@ -280,7 +272,6 @@
             box-shadow: 0 0 10px rgba(56, 189, 248, 0.1);
         }
 
-        /* Sliding Switch Theme Toggle Style */
         .theme-toggle {
             display: flex;
             align-items: center;
@@ -330,15 +321,13 @@
             position: relative;
         }
 
-        /* 2-Column Grid system */
         .container-columns {
             display: grid;
             grid-template-columns: 1.1fr 0.9fr;
             gap: 1.5rem;
-            margin-bottom: 0.5rem; /* Reduced to pull footer closer */
+            margin-bottom: 0.5rem;
         }
 
-        /* Container styled as Cyber fields with Matrix corner accents */
         .container, .container2 {
             background: var(--bg-card);
             border: 1px solid var(--border);
@@ -359,7 +348,6 @@
             box-shadow: 0 0 0 1px var(--glow-priv) inset, 0 3px 18px rgba(0,0,0,0.08);
         }
 
-        /* Mechanical Corner Decals */
         .corner-accent {
             position: absolute;
             width: 20px;
@@ -411,7 +399,6 @@
             gap: 6px;
         }
 
-        /* Buttons with Neon Styling */
         button, .convert-btn {
             width: 100%;
             padding: 0.85rem 1rem;
@@ -441,7 +428,6 @@
             pointer-events: none;
         }
 
-        /* Main Cyber Generator Button style */
         .generate-btn {
             background: var(--gen-bg);
             border: 1px solid var(--gen-border);
@@ -459,7 +445,6 @@
             color: var(--gen-text);
         }
 
-        /* Highly Attractive Futuristic Double-Ring Pulse Spinner */
         .cyber-spinner {
             display: inline-block;
             width: 18px;
@@ -1472,39 +1457,60 @@
 
     const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
-    // Dynamic fetching of IP.txt clean IPs from DarknessShade repository
-    async function fetchEndpointIPs() {
-      const genBtn = getById('main_gen_btn');
-      if (genBtn) genBtn.disabled = true;
+      // Dynamic fetching of IP.txt
+      async function fetchEndpointIPs() {
+        const genBtn = getById('main_gen_btn');
+        if (genBtn) genBtn.disabled = true;
 
-      try {
-        const targetUrl = 'https://raw.githubusercontent.com/DarknessShade/Amnezia-VPN-Config/main/IP.txt';
-        const response = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(targetUrl));
-        if (!response.ok) throw new Error();
-        const text = await response.text();
-        
-        const ips = text.split('\n')
-          .map(ip => ip.trim())
-          .filter(ip => ip.length > 0 && !ip.startsWith('#'));
-        
-        if (ips.length > 0) {
-          populateIPBox(ips);
-          return;
-        }
-      } catch (err) {
-        console.warn("Could not load dynamic IPs from GitHub.");
-        
-        getById('endpoint_list_box').innerHTML = `
+        try {
+          const response = await fetch('IP.txt');
+          if (!response.ok) throw new Error();
+          const text = await response.text();
+
+          const ips = text
+            .split('\n')
+            .map(ip => ip.trim())
+            .filter(ip => ip.length > 0 && !ip.startsWith('#'));
+
+          if (ips.length > 0) {
+            populateIPBox(ips);
+            return;
+          }
+        } catch (err) {
+          console.warn('Could not load dynamic IPs locally, trying fallback...');
+
+          try {
+            const fallbackResponse = await fetch(
+              'https://raw.githubusercontent.com/DarknessShade/Amnezia-VPN-Config/main/IP.txt',
+            );
+            if (!fallbackResponse.ok) throw new Error();
+            const text = await fallbackResponse.text();
+            const ips = text
+              .split('\n')
+              .map(ip => ip.trim())
+              .filter(ip => ip.length > 0 && !ip.startsWith('#'));
+
+            if (ips.length > 0) {
+              populateIPBox(ips);
+              return;
+            }
+          } catch (fallbackErr) {
+            console.error('All IP fetch attempts failed.', fallbackErr);
+          }
+
+          getById('endpoint_list_box').innerHTML = `
             <div style="padding: 1rem; text-align: center; color: var(--danger); font-size: 0.8rem; font-weight: bold;">
                 ${currentLang === 'fa' ? 'صفحه رو بروزرسانی کنید، آی‌پی یافت نشد' : 'IP not found, please refresh the page'}
             </div>
         `;
-        showNotification(
-            currentLang === 'fa' ? 'صفحه رو بروزرسانی کنید، آی‌پی یافت نشد' : 'IP not found, please refresh the page', 
-            'error'
-        );
-      }
-    }
+          showNotification(
+            currentLang === 'fa'
+              ? 'صفحه رو بروزرسانی کنید، آی‌پی یافت نشد'
+              : 'IP not found, please refresh the page',
+            'error',
+          );
+        }
+      } 
 
     // Creates interactive items with selection ticks
     function populateIPBox(ips) {
@@ -1596,7 +1602,6 @@
       throw new Error('All API endpoints failed.');
     }
 
-    // Fetch Base & Generate Custom AmneziaWG Config
     async function generateConfig() {
       const genBtn = getById('main_gen_btn');
       const genTextSpan = getById('gen_btn_inner_text');
@@ -1672,7 +1677,6 @@
         genBtn.classList.remove('generating');
         genBtn.disabled = false;
         
-        // Restore standard refresh SVG
         refreshIconContainer.innerHTML = `
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
@@ -1902,7 +1906,6 @@
         switchLanguage(nextLang);
     }
 
-    // Dynamic Language Switch Engine
     function switchLanguage(lang) {
       currentLang = lang;
       localStorage.setItem("lang", currentLang);
@@ -1916,7 +1919,6 @@
       fetchEndpointIPs();
     }
 
-    // Toggle custom inputs visibility based on radio selection
     function setupJunkOptionsTrigger() {
         const radios = getAllBySelector('input[name="junk"]');
         radios.forEach(radio => {
@@ -1947,7 +1949,6 @@
       });
     }
 
-    // Initial setup for layout Theme Toggle (Dark/Light)
     document.getElementById('themeToggle').addEventListener('click', () => {
       document.body.classList.toggle('light');
       document.body.classList.toggle('dark');
@@ -1957,7 +1958,6 @@
     });
 
     document.addEventListener('DOMContentLoaded', () => {
-      // Load saved theme preference
       const savedTheme = localStorage.getItem('theme') || 'dark';
       document.body.classList.remove('light', 'dark');
       document.body.classList.add(savedTheme);
