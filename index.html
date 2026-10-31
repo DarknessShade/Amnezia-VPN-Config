@@ -202,6 +202,34 @@
 
         .rtl-text { direction: rtl; }
 
+        /* Alignment: Persian -> right, English -> left */
+        body.lang-en .section-title,
+        body.lang-en .settings-group-title,
+        body.lang-en .input-label,
+        body.lang-en .option-label,
+        body.lang-en .option-sublabel,
+        body.lang-en .option-info,
+        body.lang-en small,
+        body.lang-en .modern-input:not(#custom_endpoint) { text-align: left; }
+        body.lang-fa .section-title,
+        body.lang-fa .settings-group-title,
+        body.lang-fa .input-label,
+        body.lang-fa .option-label,
+        body.lang-fa .option-sublabel,
+        body.lang-fa .option-info,
+        body.lang-fa small,
+        body.lang-fa .modern-input:not(#custom_endpoint) { text-align: right; }
+
+        body.lang-en .settings-group-title,
+        body.lang-en .modern-checkbox .checkbox { justify-content: flex-start; }
+        body.lang-fa .settings-group-title,
+        body.lang-fa .modern-checkbox .checkbox { justify-content: flex-end; }
+
+        body.lang-en .option-info { align-items: flex-start; }
+        body.lang-fa .option-info { align-items: flex-end; }
+        body.lang-fa small { display: block; }
+        body.lang-en small { display: block; }
+
         .container-wrapper {
             position: relative;
             z-index: 1;
@@ -628,14 +656,30 @@
             width: 100%;
         }
 
+        /* Toggle switch */
         .checkmark {
-            width: 16px;
-            height: 16px;
+            width: 38px;
+            height: 22px;
             border: 2px solid var(--btn-text);
-            border-radius: 3px;
+            border-radius: 999px;
             position: relative;
-            transition: all 0.15s ease;
+            direction: ltr;
+            transition: background 0.2s ease, border-color 0.2s ease;
             flex-shrink: 0;
+            box-sizing: border-box;
+        }
+
+        .checkmark::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 2px;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: var(--btn-text);
+            transform: translateY(-50%);
+            transition: left 0.2s ease, background 0.2s ease;
         }
 
         input[type="checkbox"]:checked + .checkmark {
@@ -644,15 +688,8 @@
         }
 
         input[type="checkbox"]:checked + .checkmark::after {
-            content: '✓';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -52%);
-            color: #fff;
-            font-weight: 700;
-            font-size: 11px;
-            line-height: 1;
+            left: 18px;
+            background: #fff;
         }
 
         /* Cyber Inputs styling */
@@ -687,9 +724,6 @@
             text-transform: uppercase;
         }
         
-        body.lang-fa .input-label {
-            text-align: right;
-        }
 
         .modern-input {
             padding: 0.55rem;
@@ -1145,7 +1179,7 @@
                   <!-- Amnezia 1.5 Toggle -->
                   <label class="modern-checkbox" id="amnezia15-toggle-label">
                       <div class="checkbox">
-                          <input type="checkbox" id="enableAmnezia15" class="hidden"/>
+                          <input type="checkbox" id="enableAmnezia15" class="hidden" checked/>
                           <span class="checkmark"></span>
                           <span class="option-label amnezia15-label" style="margin-right: 8px; margin-left: 8px;" data-i18n="enable_15">فعالسازی پارامترهای آمینزیا 1.5 (I1-I5)</span>
                       </div>
@@ -1173,12 +1207,18 @@
                   </div>
 
                   <!-- Amnezia 1.5 I1-I5 Inputs -->
-                  <div id="amnezia15-inputs" class="custom-inputs hidden amnezia15-inputs-panel">
+                  <div id="amnezia15-inputs" class="custom-inputs amnezia15-inputs-panel">
                       <div class="settings-group-title amnezia15-group-title" data-i18n="amnezia_params">پارامترهای آمینزیا نسخه 1.5</div>
                       <small class="amnezia15-doc" style="display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-size: 0.7rem;">
                           <span data-i18n="amnezia15_note_prefix">برای جزییات بیشتر مستندات آمینزیا را </span>
                           <a target="_blank" href="https://docs.amnezia.org/documentation/instructions/new-amneziawg-selfhosted/" style="color: var(--accent-pub);">مطالعه کنید</a>.
                       </small>
+                      <div class="set-selector-row" style="display: flex; gap: 0.4rem; margin-bottom: 0.6rem; flex-wrap: wrap;">
+                          <button type="button" class="randombtn modern-secondary-btn amnezia-set-btn" data-set="1" style="flex: 1; min-width: 60px;">Set 1</button>
+                          <button type="button" class="randombtn modern-secondary-btn amnezia-set-btn" data-set="2" style="flex: 1; min-width: 60px;">Set 2</button>
+                          <button type="button" class="randombtn modern-secondary-btn amnezia-set-btn" data-set="3" style="flex: 1; min-width: 60px;">Set 3</button>
+                          <button type="button" class="randombtn modern-secondary-btn amnezia-set-btn" data-set="4" style="flex: 1; min-width: 60px;">Set 4</button>
+                      </div>
                       <div class="input-row" style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.4rem;">
                           <label class="input-label" style="width: 40px;">I1 =</label>
                           <input id="i1_1" class="modern-input" placeholder="مقدار پیش‌فرض یا خالی">
@@ -1199,6 +1239,73 @@
                           <label class="input-label" style="width: 40px;">I5 =</label>
                           <input id="i5_1" class="modern-input" placeholder="مقدار I5">
                       </div>
+                  </div>
+
+                  <!-- Amnezia 3.0 -->
+                  <label class="modern-checkbox" id="amnezia3-toggle-label">
+                      <div class="checkbox">
+                          <input type="checkbox" id="enableAmnezia3" class="hidden"/>
+                          <span class="checkmark"></span>
+                          <span class="option-label" style="margin-right: 8px; margin-left: 8px;" data-i18n="enable_3">فعالسازی آمینزیا 3.0</span>
+                      </div>
+                  </label>
+                  <div id="amnezia3-inputs" class="custom-inputs hidden">
+                      <div class="custom-inputs-row">
+                          <div class="input-group">
+                              <label class="input-label">ContentPaddingAddition</label>
+                              <input id="awg3_cpa" class="modern-input" placeholder="27-97">
+                          </div>
+                          <div class="input-group">
+                              <label class="input-label">MaxHandshakeAttempts</label>
+                              <input id="awg3_mha" class="modern-input" placeholder="18-26">
+                          </div>
+                          <div class="input-group">
+                              <label class="input-label">KeepaliveTimeout</label>
+                              <input id="awg3_kt" class="modern-input" placeholder="9-16">
+                          </div>
+                      </div>
+                      <div class="custom-inputs-row">
+                          <div class="input-group">
+                              <label class="input-label">RejectAfterTime</label>
+                              <input id="awg3_rat" class="modern-input" placeholder="171-196">
+                          </div>
+                          <div class="input-group">
+                              <label class="input-label">RekeyAfterTime</label>
+                              <input id="awg3_rkat" class="modern-input" placeholder="116-131">
+                          </div>
+                          <div class="input-group">
+                              <label class="input-label">RekeyTimeout</label>
+                              <input id="awg3_rt" class="modern-input" placeholder="6-9">
+                          </div>
+                      </div>
+                      <button type="button" class="randombtn modern-secondary-btn" id="randomAwg3Btn" style="width: 100%;">
+                          <span data-i18n="generate_random">تولید مقادیر تصادفی</span>
+                      </button>
+                  </div>
+
+                  <!-- Amnezia 3.1 -->
+                  <label class="modern-checkbox" id="amnezia31-toggle-label">
+                      <div class="checkbox">
+                          <input type="checkbox" id="enableAmnezia31" class="hidden"/>
+                          <span class="checkmark"></span>
+                          <span class="option-label" style="margin-right: 8px; margin-left: 8px;" data-i18n="enable_31">فعالسازی آمینزیا 3.1</span>
+                      </div>
+                  </label>
+                  <div id="amnezia31-inputs" class="custom-inputs hidden">
+                      <label class="modern-checkbox">
+                          <div class="checkbox">
+                              <input type="checkbox" id="awg31_trailers" class="hidden" checked/>
+                              <span class="checkmark"></span>
+                              <span class="option-label" style="margin-right: 8px; margin-left: 8px;">Random trailers</span>
+                          </div>
+                      </label>
+                      <label class="modern-checkbox">
+                          <div class="checkbox">
+                              <input type="checkbox" id="awg31_cookies" class="hidden" checked/>
+                              <span class="checkmark"></span>
+                              <span class="option-label" style="margin-right: 8px; margin-left: 8px;">Disable cookies</span>
+                          </div>
+                      </label>
                   </div>
               </div>
           </div>
@@ -1310,6 +1417,27 @@
     // ── Javascript Logic ─────────────────────────────────────── */
     const AMNEZIA_KEYS = ['jc', 'jmin', 'jmax', 's1', 's2', 'h1', 'h2', 'h3', 'h4'];
     const AMNEZIA15_KEYS = ['i1', 'i2', 'i3', 'i4', 'i5'];
+    const AMNEZIA15_SETS = {
+      1: {
+        i1: '<r 2><b 0x0100000100000000000003777777056170706c6503636f6d0000010001>',
+        i2: '<r 2><b 0x0100000100000000000003777777056170706c6503636f6d00001c0001>',
+        i3: '', i4: '', i5: ''
+      },
+      2: {
+        i1: '<b 0x494e56495445207369703a626f624062696c6f78692e636f6d205349502f322e300d0a5669613a205349502f322e302f55445020706333332e61746c616e74612e636f6d3b6272616e63683d7a39684734624b3737366173646864730d0a4d61782d466f7277617264733a2037300d0a546f3a20426f62203c7369703a626f624062696c6f78692e636f6d3e0d0a46726f6d3a20416c696365203c7369703a616c6963654061746c616e74612e636f6d3e3b7461673d313932383330313737340d0a43616c6c2d49443a20613834623463373665363637313040706333332e61746c616e74612e636f6d0d0a435365713a2033313431353920494e564954450d0a436f6e746163743a203c7369703a616c69636540706333332e61746c616e74612e636f6d3e0d0a436f6e74656e742d547970653a206170706c69636174696f6e2f7364700d0a436f6e74656e742d4c656e6774683a20300d0a0d0a>',
+        i2: '<b 0x5349502f322e302031303020547279696e670d0a5669613a205349502f322e302f55445020706333332e61746c616e74612e636f6d3b6272616e63683d7a39684734624b3737366173646864730d0a546f3a20426f62203c7369703a626f624062696c6f78692e636f6d3e0d0a46726f6d3a20416c696365203c7369703a616c6963654061746c616e74612e636f6d3e3b7461673d313932383330313737340d0a43616c6c2d49443a20613834623463373665363637313040706333332e61746c616e74612e636f6d0d0a435365713a2033313431353920494e564954450d0a436f6e74656e742d4c656e6774683a20300d0a0d0a>',
+        i3: '', i4: '', i5: ''
+      },
+      3: {
+        i1: '<b 0xce000000010897a297ecc34cd6dd000044d0ec2e2e1ea2991f467ace4222129b5a098823784694b4897b9986ae0b7280135fa85e196d9ad980b150122129ce2a9379531b0fd3e871ca5fdb883c369832f730e272d7b8b74f393f9f0fa43f11e510ecb2219a52984410c204cf875585340c62238e14ad04dff382f2c200e0ee22fe743b9c6b8b043121c5710ec289f471c91ee414fca8b8be8419ae8ce7ffc53837f6ade262891895f3f4cecd31bc93ac5599e18e4f01b472362b8056c3172b513051f8322d1062997ef4a383b01706598d08d48c221d30e74c7ce000cdad36b706b1bf9b0607c32ec4b3203a4ee21ab64df336212b9758280803fcab14933b0e7ee1e04a7becce3e2633f4852585c567894a5f9efe9706a151b615856647e8b7dba69ab357b3982f554549bef9256111b2d67afde0b496f16962d4957ff654232aa9e845b61463908309cfd9de0a6abf5f425f577d7e5f6440652aa8da5f73588e82e9470f3b21b27b28c649506ae1a7f5f15b876f56abc4615f49911549b9bb39dd804fde182bd2dcec0c33bad9b138ca07d4a4a1650a2c2686acea05727e2a78962a840ae428f55627516e73c83dd8893b02358e81b524b4d99fda6df52b3a8d7a5291326e7ac9d773c5b43b8444554ef5aea104a738ed650aa979674bbed38da58ac29d87c29d387d80b526065baeb073ce65f075ccb56e47533aef357dceaa8293a523c5f6f790be90e4731123d3c6152a70576e90b4ab5bc5ead01576c68ab633ff7d36dcde2a0b2c68897e1acfc4d6483aaaeb635dd63c96b2b6a7a2bfe042f6aed82e5363aa850aace12ee3b1a93f30d8ab9537df483152a5527faca21efc9981b304f11fc95336f5b9637b174c5a0659e2b22e159a9fed4b8e93047371175b1d6d9cc8ab745f3b2281537d1c75fb9451871864efa5d184c38c185fd203de206751b92620f7c369e031d2041e152040920ac2c5ab5340bfc9d0561176abf10a147287ea90758575ac6a9f5ac9f390d0d5b23ee12af583383d994e22c0cf42383834bcd3ada1b3825a0664d8f3fb678261d57601ddf94a8a68a7c273a18c08aa99c7ad8c6c42eab67718843597ec9930457359dfdfbce024afc2dcf9348579a57d8d3490b2fa99f278f1c37d87dad9b221acd575192ffae1784f8e60ec7cee4068b6b988f0433d96d6a1b1865f4e155e9fe020279f434f3bf1bd117b717b92f6cd1cc9bea7d45978bcc3f24bda631a36910110a6ec06da35f8966c9279d130347594f13e9e07514fa370754d1424c0a1545c5070ef9fb2acd14233e8a50bfc5978b5bdf8bc1714731f798d21e2004117c61f2989dd44f0cf027b27d4019e81ed4b5c31db347c4a3a4d85048d7093cf16753d7b0d15e078f5c7a5205dc2f87e330a1f716738dce1c6180e9d02869b5546f1c4d2748f8c90d9693cba4e0079297d22fd61402dea32ff0eb69ebd65a5d0b687d87e3a8b2c42b648aa723c7c7daf37abcc4bb85caea2ee8f55bec20e913b3324ab8f5c3304f820d42ad1b9f2ffc1a3af9927136b4419e1e579ab4c2ae3c776d293d397d575df181e6cae0a4ada5d67ecea171cca3288d57c7bbdaee3befe745fb7d634f70386d873b90c4d6c6596bb65af68f9e5121e67ebf0d89d3c909ceedfb32ce9575a7758ff080724e1ab5d5f43074ecb53a479af21ed03d7b6899c36631c0166f9d47e5e1d4528a5d3d3f744029c4b1c190cbfbad06f5f83f7ad0429fa9a2719c56ffe3783460e166de2d8>',
+        i2: '', i3: '', i4: '', i5: ''
+      },
+      4: {
+        i1: '<b 0xc9000000010865c53e353e764f78000040f71a98358758134be2168c4f27f146594d1da19dfbae743bd10cabfbd094bbde6c3f93b480ac6e4e00b4d7b6d4c35d361c9f13974c45931324c0337e3242842922e7bc848eae433ce7d35bf5f68096a305f4afd6a6f69261253690a1c460a4b8fafb2e854efea6d1e6c9f3348addf7708139096dc051dd15ab37712a474d8d17d979f0a0bffff944e674308811be76418254963e5ec7bc777a3da75fe248b7249d83aecfb9aef3d2095424102aa66287a638172d30791146e09a4edad0adbd420331cea21b1e5e24196e3b20c33c1e9d97521cf86908b70464a924bdf991601b897fc1d04c85ae68f09f3bbfc042885fc57833ebdce3fa4a><r 954>',
+        i2: '<b 0x7b2ae6fc5944ff7892><r 53>',
+        i3: '', i4: '', i5: ''
+      }
+    };
 
     const LANG_PACKS = {
       fa: {
@@ -1319,6 +1447,8 @@
         advanced_settings: "تنظیمات پیشرفته AmneziaWG",
         junk_packet_settings: "تنظیمات پکت‌ها (Junk Packets)",
         enable_15: "فعالسازی پارامترهای آمینزیا 1.5 (I1-I5)",
+        enable_3: "فعالسازی آمینزیا 3.0",
+        enable_31: "فعالسازی آمینزیا 3.1",
         light_option: "سبک",
         heavy_option: "سنگین",
         custom_settings: "دلخواه",
@@ -1339,6 +1469,8 @@
         advanced_settings: "AmneziaWG Advanced Settings",
         junk_packet_settings: "Junk Packet Settings",
         enable_15: "Enable Amnezia 1.5 (I1-I5)",
+        enable_3: "Enable Amnezia 3.0",
+        enable_31: "Enable Amnezia 3.1",
         light_option: "Light",
         heavy_option: "Heavy",
         custom_settings: "Custom",
@@ -1725,6 +1857,25 @@
         result.i5 = getById('i5_1')?.value || '';
       }
 
+      if (getById('enableAmnezia3')?.checked) {
+        const v = (id, def) => (getById(id)?.value || '').trim() || def;
+        result.awg3 = {
+          ContentPaddingAddition: v('awg3_cpa', '27-97'),
+          MaxHandshakeAttempts: v('awg3_mha', '18-26'),
+          KeepaliveTimeout: v('awg3_kt', '9-16'),
+          RejectAfterTime: v('awg3_rat', '171-196'),
+          RekeyAfterTime: v('awg3_rkat', '116-131'),
+          RekeyTimeout: v('awg3_rt', '6-9')
+        };
+      }
+
+      if (getById('enableAmnezia31')?.checked) {
+        result.awg31 = {
+          randomTrailers: !!getById('awg31_trailers')?.checked,
+          disableCookies: !!getById('awg31_cookies')?.checked
+        };
+      }
+
       return result;
     }
 
@@ -1852,6 +2003,16 @@
       if (options.i4) configLines.push(`I4 = ${options.i4}`);
       if (options.i5) configLines.push(`I5 = ${options.i5}`);
 
+      if (options.awg3) {
+        for (const [k, val] of Object.entries(options.awg3)) {
+          configLines.push(`${k} = ${val}`);
+        }
+      }
+      if (options.awg31) {
+        if (options.awg31.randomTrailers) configLines.push(`RandomTrailers = on`);
+        if (options.awg31.disableCookies) configLines.push(`DisableCookies = on`);
+      }
+
       configLines.push(
         ``,
         `[Peer]`,
@@ -1934,6 +2095,40 @@
       getById('amnezia15-inputs')?.classList.toggle('hidden', !isChecked);
     }
 
+    function toggleAmnezia3() {
+      getById('amnezia3-inputs')?.classList.toggle('hidden', !getById('enableAmnezia3')?.checked);
+    }
+
+    function toggleAmnezia31() {
+      getById('amnezia31-inputs')?.classList.toggle('hidden', !getById('enableAmnezia31')?.checked);
+    }
+
+    function applyAmneziaSet(n) {
+      const set = AMNEZIA15_SETS[n];
+      if (!set) return;
+      AMNEZIA15_KEYS.forEach((key, idx) => {
+        const el = getById(`i${idx + 1}_1`);
+        if (el) el.value = set[key] || '';
+      });
+      getAllBySelector('.amnezia-set-btn').forEach(btn => {
+        btn.style.outline = btn.dataset.set === String(n) ? '2px solid var(--accent-pub)' : 'none';
+      });
+    }
+
+    function randomizeAwg3() {
+      const range = (lo, hi) => {
+        const a = getRandomInt(lo, hi);
+        const b = getRandomInt(a, hi);
+        return a === b ? `${a}` : `${a}-${b}`;
+      };
+      getById('awg3_cpa').value = range(20, 120);
+      getById('awg3_mha').value = range(15, 30);
+      getById('awg3_kt').value = range(8, 18);
+      getById('awg3_rat').value = range(160, 200);
+      getById('awg3_rkat').value = range(110, 135);
+      getById('awg3_rt').value = range(5, 10);
+    }
+
     function translatePage(lang) {
       document.body.className = `lang-${lang} ` + (document.body.classList.contains('light') ? 'light' : 'dark');
       const dict = LANG_PACKS[lang];
@@ -1966,6 +2161,14 @@
       switchLanguage(currentLang);
       
       getById('enableAmnezia15').addEventListener('change', toggleAmnezia15);
+      getById('enableAmnezia3').addEventListener('change', toggleAmnezia3);
+      getById('enableAmnezia31').addEventListener('change', toggleAmnezia31);
+      getById('randomAwg3Btn').onclick = randomizeAwg3;
+      getAllBySelector('.amnezia-set-btn').forEach(btn => {
+        btn.addEventListener('click', () => applyAmneziaSet(btn.dataset.set));
+      });
+      applyAmneziaSet(1);
+      toggleAmnezia15();
       
       getById('randomJunkBtn').onclick = function() {
         const jc = getRandomInt(1, 128);
